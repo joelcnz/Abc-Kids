@@ -1,0 +1,1 @@
+dmd main base world media input keyhandling texthandling current -debug -debug=TDD -I../Jeca -I../OtherPeoples/dallegro5 -L../Jeca/jeca.a -L-L../OtherPeoples/dallegro5/libdallegro5.a

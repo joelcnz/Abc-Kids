@@ -1,0 +1,18 @@
+{
+    "name": "abckids",
+    "targetType": "executable",
+    "description": "A Poorly Programmed Production. Presenting: Abc Kids!",
+    "copyright": "Copyright © 2016 none",
+    "sourcePaths" : ["source",
+		"../JMiscLib/source",
+		"../IniLib/source",
+		"../JecFoxid"],
+    "importPaths" : ["source",
+		"../JMiscLib/source",
+		"../IniLib/source",
+		"../JecFoxid"],
+    "dependencies": {
+		"foxid": "~master",
+		"unit-threaded": "~>1.0.2"
+    }
+}

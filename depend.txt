@@ -1,0 +1,14 @@
+al_init success
+al_install_keyboard: pass
+No mouse
+al_install_audio: pass
+al_init_acodec_addon: pass
+al_reserve_samples( 255 ): pass
+Unregistered: --makedepend
+Graphic dimentions ( 640 x 480 )
+blow.wav
+dlang.wav
+fire.jpg
+fire.wav
+welcome.wav
+shutdown_input successfully

@@ -1,0 +1,2 @@
+rcc abc.rc
+pause

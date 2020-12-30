@@ -27,21 +27,16 @@ class Input {
 public:
 	Sound blowSnd;
 	string _lastInput;
-	int keysEnd = SDL_SCANCODE_NONUSHASH;
+	int keysEnd = SDL_NUM_SCANCODES;
 	bool updateRefGraphs;
 
 	this() {
 		_text = new KText(
 			/* xpos: */ 0,
-			/* ypos: */ window.height-("E".getHeightText(g_font))-7, // centered
+			/* ypos: */ window.height-("Yy".getHeightText(g_font))-7, // centered
 			/* fat colour: */ Color(0,0,255), //Colour.blue,
 			/* slim colour: */ Color(0,255,255) //Colour.cyan
 		);
-		
-		// setup the keys
-		//foreach( keyIndex; keysStart .. keysEnd ) {
-		//	g_keys[ keyIndex ].tkey = keyIndex;
-		//}
 		
 		// go through the letters of the alphabet
 		immutable a = 0, z = 26;
@@ -105,7 +100,7 @@ public:
 		}
 
 		// Do input
-		foreach( keyId; keysStart .. keysEnd ) //#not sure if keysEnd is a key, it isn't in the loop
+		foreach(int keyId; keysStart .. keysEnd ) { //#not sure if keysEnd is a key, it isn't in the loop
 			foreach(keyStuff; [&doAlphabet, &doSpace, &doNumbers, &doBackSpace, &doEnter]) {
 				auto result = keyStuff( keyId, text, doShowRefWords, doShowPicture );
 				auto notEmpty = ! result.empty;
@@ -114,6 +109,7 @@ public:
 					return result;
 				}
 			}
+		}
 		
 		return g_emptyText;
 	} // get input key
@@ -155,10 +151,25 @@ private:
 	}
 	
 	string doNumbers( int keyId, ref string text, ref bool doShowRefWords, ref bool doShowPicture  ) {
-		if ( keyId >= SDL_SCANCODE_0 && keyId <= SDL_SCANCODE_9 )
-			if ( g_keys[ keyId ].keyTrigger ) {
-				_nsnds[ keyId - SDL_SCANCODE_0 ].play(false);
-				text ~= '0' + ( keyId - SDL_SCANCODE_0 ) & 0xFF;
+		struct NumKeys {
+			int scanc;
+			char n;
+		}
+		NumKeys[] numKeys = [
+			{SDL_SCANCODE_0,'0'},
+			{SDL_SCANCODE_1,'1'},
+			{SDL_SCANCODE_2,'2'},
+			{SDL_SCANCODE_3,'3'},
+			{SDL_SCANCODE_4,'4'},
+			{SDL_SCANCODE_5,'5'},
+			{SDL_SCANCODE_6,'6'},
+			{SDL_SCANCODE_7,'7'},
+			{SDL_SCANCODE_8,'8'},
+			{SDL_SCANCODE_9,'9'}];
+		foreach(sni, nk; numKeys)
+			if (g_keys[nk.scanc].keyTrigger) {
+				_nsnds[sni].play(false);
+				text ~= nk.n;
 			}
 		return g_emptyText;
 	}

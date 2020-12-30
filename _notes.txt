@@ -1,20 +1,24 @@
 .gitignore doesn't seem to be working
 
-*******************************************
-Abc5 (or maybe 'Spell it, hear it, see it')
-*******************************************
+**************************************************************************
+Abc Kids (or maybe 'Spell it, hear it, see it', or Type hear/here and see)
+**************************************************************************
 
 always have blow.wav in the playback folder, or the program may not even run.
 
 To build:
 
 You need:
-DAllegro5
-jeca
+D programming language
+dub
+sdl2
+sdl2_image
+sdl2_mixer
+sdl2_ttf
+Jecfoxid
+JMisc
 
-Use 'cf -r' to build program.
-
-To run double click the 'abc5' [possibly 'abc5.exe'] that has the coloured ABC icon, (not to be confused with the 'abc' that does not have a '5' on the end).
+dub - to build and run
 
 Enter the comma seperated names and words shown on the window.
 
@@ -27,10 +31,19 @@ Used Enter to clear you've just typed in also.
 
 To add your own sounds and pictures, just paste them into the Playback folder. Also you could record your self each letter and put it in 'Letters' folder, you may want to make a copy of the 'Letters' folder before hand.
 
-Note: if your using Linux, the sounds may not work.
-
 This program was made with (as follows):
 
 The D Programming langage: www.dlang.org
-Allegro 5: www.liballeg.org // have to change this
-DAllegro5: https://github.com/SiegeLord/DAllegro5
+Foxid: https://github.com/TodNaz/Foxid
+
+
+Credits:
+Program made by Joel Ezra Christensen
+LettersO by Oscar Christensen
+LettersE by Emily Christensen
+
+Others worth mentioning:
+Mari.wav by Lahtrell
+Latrell by Lahtrell
+Sean M
+Jade M

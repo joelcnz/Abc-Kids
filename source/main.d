@@ -27,9 +27,86 @@ import base, world;
 /**
  * Title: Main program entry
  * 
- * Init JECA, run main class
+ * Init jecfoxid, run main class
  */
 int main( string[] args ) {
+	import std.stdio, std.file;
+
+	immutable settingsFileName = "settings.txt";
+	if (! settingsFileName.exists) {
+		writeln(settingsFileName, " - not exist");
+		return -2;
+	}
+	auto fr = File(settingsFileName, "r"); // open for reading
+	g_playBackFolder = fr.readln.strip;
+	g_voicesFolder = fr.readln.strip;
+	fr.close;
+
+	bool prompt;
+	import std.getopt;
+	auto helpInformation = getopt(
+		args,
+		"playback", &g_playBackFolder, // pictures and sound
+		"letters", &g_voicesFolder,    // Alphabet and numbers
+		"prompt", &prompt
+	);
+
+	if (prompt) {
+		import arsd.terminal;
+		import std.algorithm;
+
+		auto chooseFolder(in string folderStart, string progress) {
+			string[] files;
+			foreach(string name; dirEntries(".",SpanMode.shallow)) {
+				if (name.isDir && name.canFind(folderStart))
+					files ~= name[2..$];
+			}
+			writeln(folderStart, " categories ", progress, ":");
+			int i;
+			files.map!(w => text(i += 1, ". ", w)).each!writeln;
+			int sel;
+			bool done;
+			do {
+				done = true;
+				auto terminal = Terminal(ConsoleOutputType.linear);
+				//import std.string : sstrip = strip;
+				string input = terminal.getline();
+				try {
+					sel = input.to!int;
+				} catch(Exception e) {
+					writeln("Invalid selection, try again..");
+					done = false;
+				}
+				if (done == true && sel < 1 || sel > files.length) {
+					writeln("Out of range, try again..");
+					done = false;
+				}
+			} while(! done);
+
+			return files[sel-1];
+		}
+
+		g_playBackFolder = chooseFolder("PlayBack", "1/2");
+		g_voicesFolder = chooseFolder("Letters", "2/2");
+	}
+
+	import std.file : exists;
+	if (! g_voicesFolder.exists) {
+		writeln(g_voicesFolder, " - does not exist");
+		return -3;
+	}
+	if (! g_playBackFolder.exists) {
+		writeln(g_playBackFolder, " does not exist");
+		return -4;
+	}
+	if (helpInformation.helpWanted) {
+		defaultGetoptPrinter("Some information about the program. Eg 'dub -- --letters LettersO --playback PlayBackA'",
+		helpInformation.options);
+		return 0;
+	}
+	auto f = File("settings.txt", "w"); // open for writing
+	f.writeln(g_playBackFolder, '\n', g_voicesFolder);
+	f.close;
 	//#Note: args[ 0 .. $ ] gets all, args[ 1 .. 3 ] gets 1, & 2
 
 		//args = args[ 0 ] ~ "-wxh 640 480 -mode full".split() ~ args[ 1 .. $ ]; //#Split isn't clear this way ("foo bar".split), I think. Less typing though

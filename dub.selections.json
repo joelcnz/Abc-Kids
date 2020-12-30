@@ -2,6 +2,7 @@
 	"fileVersion": 1,
 	"versions": {
 		"allegro": "4.0.4+5.2.0",
+		"arsd-official": "8.5.4",
 		"bindbc-loader": "0.3.2",
 		"bindbc-opengl": "0.13.0",
 		"bindbc-sdl": "0.19.1",

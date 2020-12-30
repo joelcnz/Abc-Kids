@@ -52,52 +52,31 @@ public:
 		
 		//#didn't read the instructions properly, didn't see (SpanMode.shallow) single folder only (not use sub folders).
 		string[] names;
-		import std.algorithm : sort;
+		import std.algorithm : sort, map;
 		import std.array;
-		foreach(string e; dirEntries(g_playBackFolder, SpanMode.shallow).array.sort!"a < b") {
+		//auto sortBy = dirEntries(g_playBackFolder, SpanMode.shallow).array.map!(l => l.toLower).array.sort!"a < b";
+		auto sortBy = dirEntries(g_playBackFolder, SpanMode.shallow).array.sort!"a < b";
+		foreach(string e; sortBy) {
 			names ~= e;
 		}
 
-		/+
 		// go through all the files setting them up
 		g_progressBar = ProgressBar(
 			/* step size: */ cast(float)window.width / names.length,
 			/* fullLength: */ window.width);
-		+/
 
 		auto currentPicture = new Sprite();
 
 		// Init
-		//with(g_progressBar)
-		//	process(),
-		//	draw();
-
-		gGraph.drawning(); //#maybe wipe this line
-
 		foreach(ref name; names) {
 			gGraph.clear();
 			with(g_progressBar)
 				process(),
 				draw();
-			/+
-			auto path = al_create_path(name.toStringz());
-			scope( exit )
-				al_destroy_path( path );
 
-			alias al_get_path_extension getExtension;
-			string 
-				extension = getExtension(path).to!string().toLower(),
-				fileNameBase;
-			if ( name.isFile )
-				fileNameBase = to!string( al_get_path_basename( path ) );
-			else {
-				writeln( "Ignore directory - ", name );
-				continue;
-			}
-			+/
 			import p = std.path;
 			import std.file;
-			string fileNameBase = p.baseName(name[0..$-4]),
+			string fileNameBase = p.baseName(name.stripExtension),
 				extension = p.extension(name).toLower;
 			import std.string;
 			if (name.isDir) {
@@ -120,11 +99,8 @@ public:
 							Color(255,0,0), //Colour.red,
 							Color(255,255,0),//Colour.yellow,
 							g_playBackFolder ~ dirSeparator ~ fileNameBase,
-							//filename,
 						);
-						//if (name.toLower.indexOf(".jpg") != -1)
 						if (media[$ - 1].picture) {
-							//al_draw_bitmap(media[$ - 1].picture, 0f, 25f, 0);
 							currentPicture = media[$ - 1].picture;
 						}
 					}
@@ -132,10 +108,10 @@ public:
 
 				if (currentPicture !is null)
 					gGraph.draw(currentPicture,Vec(0,0));
-					//al_draw_bitmap(currentPicture, 0f, 25f, 0);
 				
 				//Update display
 				gGraph.drawning();
+				//SDL_Delay(100);
 
 				// If no matches for file (eg. 'shoe.mud' wouldn't be a match)
 				auto notAMatch = ! aMatch;
@@ -172,7 +148,6 @@ public:
 		if (mediaLengthGreaterThanZero) {
 			auto last = media[ $ - 1 ]; // prev - previous media object
 			// last pos plus new word
-			//xpos = last.text.xpos + al_get_text_width( base.g_font, toStringz( last.text.stringText ~ g_devide) );
 			xpos = last.text.xpos + (last.text.stringText~g_devide).getWidthText(g_font);
 			ypos = last.text.ypos;
 			//If would hang over the edge of the screen, then start new line for word etc
@@ -195,8 +170,6 @@ public:
 		
 		foreach( ext; g_imageExtentions.split())
 			if ( exists( rootName ~ ext ) ) {
-				//al_set_new_bitmap_flags(ALLEGRO_MAG_LINEAR);
-				//_pic = new Bmp( (rootName ~ ext).checkFile(" image file loaded.") );
 				_pic = new Sprite();
 				foxloader.load!Image(rootName~ext, rootName);
 				_pic.image = foxloader.get!Image(rootName);
@@ -205,8 +178,6 @@ public:
 
 		foreach( ext; g_soundExtentions.split())
 			if ( exists( rootName ~ ext ) ) {
-				//_snd = al_load_sample( toStringz( (rootName ~ ext).checkFile(" sound file loaded.") ) );
-				//_snd = al_load_sample( toStringz( (rootName ~ ext)) );
 				_snd = new Sound();
 				try
 					_snd.load(rootName ~ ext, rootName);
@@ -228,16 +199,6 @@ public:
 	void tell() {
 		if ( _snd )
 			_snd.play(false);
-			/+
-			al_play_sample(
-				_snd,
-				1.0,
-				ALLEGRO_AUDIO_PAN_NONE,
-				1.0,
-				ALLEGRO_PLAYMODE.ALLEGRO_PLAYMODE_ONCE,
-				null
-			);
-			+/
 	}
 	
 	/**

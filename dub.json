@@ -4,15 +4,16 @@
     "description": "A Poorly Programmed Production. Presenting: Abc Kids!",
     "copyright": "Copyright © 2016 none",
     "sourcePaths" : ["source",
-		"../JMiscLib/source",
-		"../IniLib/source",
-		"../JecFoxid"],
+      "../JMiscLib/source",
+      "../IniLib/source",
+      "../JecFoxid"],
     "importPaths" : ["source",
-		"../JMiscLib/source",
-		"../IniLib/source",
-		"../JecFoxid"],
+      "../JMiscLib/source",
+      "../IniLib/source",
+      "../JecFoxid"],
     "dependencies": {
-		"foxid": "~master",
-		"unit-threaded": "~>1.0.2"
+      "foxid": "~master",
+      "unit-threaded": "~>1.0.2",
+      "arsd-official:terminal": "~>8.5.4"
     }
 }

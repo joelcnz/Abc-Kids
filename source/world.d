@@ -41,6 +41,8 @@ public:
 	 * Main program loop
 	 */
 	void run() {
+		// SDL_Init(SDL_INIT_JOYSTICK);
+		
 		bool done = false;
 		while(! done) {
 			FPS.start();
@@ -49,7 +51,10 @@ public:
 					done = true;
 			}
 
-			SDL_PumpEvents();		
+			SDL_PumpEvents();
+
+			if (g_keys[SDL_SCANCODE_BACKSPACE].keyPressed)
+				mixin(tce("SDL_NumJoysticks()"));
 			
 			_current.logic;
 

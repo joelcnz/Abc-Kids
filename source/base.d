@@ -20,7 +20,7 @@ string g_inputLets; /// User input
 ProgressBar g_progressBar;
 
 /// What appears on the windows title bar
-immutable g_displayTitle = "Abc - Type, Hear, and See! :-)";
+immutable g_displayTitle = "Abc Kids! :-)";
 
 /// Main font
 Font g_font; // public by default. //#Not sure on name
@@ -37,10 +37,11 @@ enum g_PrintFatness {fat, slim};
 enum g_emptyText = ""; // was g_nothing
 
 /// Alphabet letter sounds folder
-immutable g_voicesFolder = "Letters";
+string g_voicesFolder = "LettersE";// "LettersA"; // "LettersE"; // "LettersO"
 
 /// Sounds, pictures and other media
-immutable g_playBackFolder = "Playback";
+// immutable g_playBackFolder = "Playback"; //"Playback2";
+string g_playBackFolder = "PlaybackA";
 
 /// reference word devider
 immutable g_devide = ", ";

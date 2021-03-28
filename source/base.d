@@ -10,7 +10,13 @@ module base;
 import std.stdio;
 import std.file;
 
-import jecfoxid;
+//import jecfoxid;
+import jecsdl;
+
+// enum DisplayType {JustReference, JustPicture, ReferenceAndPicture}
+// DisplayType g_distype = DisplayType.JustReference;
+
+bool interrupingQuit = false;
 
 import progressbar;
 
@@ -23,7 +29,7 @@ ProgressBar g_progressBar;
 immutable g_displayTitle = "Abc Kids! :-)";
 
 /// Main font
-Font g_font; // public by default. //#Not sure on name
+// Font g_font; // public by default. //#Not sure on name
 
 bool g_upDateRefGfx = true;
 

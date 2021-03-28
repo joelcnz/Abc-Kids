@@ -6,14 +6,20 @@
     "sourcePaths" : ["source",
       "../JMiscLib/source",
       "../IniLib/source",
-      "../JecFoxid"],
+      "../JecsdlLib/source"],
     "importPaths" : ["source",
       "../JMiscLib/source",
       "../IniLib/source",
-      "../JecFoxid"],
+      "../JecsdlLib/source"],
     "dependencies": {
-      "foxid": "~master",
       "unit-threaded": "~>1.0.2",
-      "arsd-official:terminal": "~>8.5.4"
-    }
-}
+      "arsd-official:terminal": "~>8.5.4",
+      "bindbc-sdl": "~>0.13.0"
+    },
+    "versions": [
+      "SDL_2010",
+      "BindSDL_Image",
+      "BindSDL_TTF",
+      "BindSDL_Mixer"
+    ]
+  }

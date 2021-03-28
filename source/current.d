@@ -13,7 +13,7 @@ import std.traits: EnumMembers; // for foreach enums
 import std.math;
 import std.random;
 
-import jecfoxid;
+import jecsdl;
 
 import base, media, input;
 
@@ -26,15 +26,19 @@ public:
 	this() {
 		doShowRefWords = true,
 		doShowPicture = false;
-		noPicture = null;
+		// noPicture = null;
 		_strInput = g_emptyText;
 		_media = Media.loadInMedia(); // from media module
 		_input = new Input();
 
-		_refsImg = new Image();
-		window.blendMode = BlendMode.blend;
-		_refsImg.createTexture(window.width,window.height,Color(0,0,0,0),PixelFormat.RGBA);
-		window.blendMode = BlendMode.none;
+		//_refsImg = new Image();
+		// window.blendMode = BlendMode.blend;
+		SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+		//_refsImg.createTexture(window.width,window.height,SDL_Color(0,0,0,0),PixelFormat.RGBA);
+		// _refsImg.setup("transparent.png"); 
+		_refsImg.setup(SCREEN_WIDTH, SCREEN_HEIGHT);
+		// window.blendMode = BlendMode.none;
+		SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_NONE);
 	}
 	
 	void logic() {
@@ -51,38 +55,40 @@ public:
 private:
 	IMedia[] _media; // sound, picture, and word dynamic array
 	Input _input; // handle keyboard input (user typing in the words/names)
-	Sprite _picture; // current picture
+	Image _picture; // current picture
 	Image _refsImg;
 	bool
 		doShowRefWords,
 		doShowPicture;
 	
-	Sprite noPicture;
+	// Image noPicture;
 	string _strInput;
 
 	void doInputStuff() {
-		pragma(msg, __traits(getAttributes, typeof(_input)));
+		// pragma(msg, __traits(getAttributes, typeof(_input)));
 
 		// main Input method
 		with( _input ) {
 			_strInput = doKeyInput( /* ref: */ doShowRefWords, /* ref: */ doShowPicture );
-			if ( ! doShowPicture )
-				_picture = noPicture;
+			// if ( ! doShowPicture ) {
+				// _picture = noPicture;
+				//_picture.close;
+			// }
 
 			if ( _strInput != g_emptyText ) {
 				auto noMedia = true;
 				foreach( m; _media ) {
-					auto inputNameMatch = _strInput.toLower == m.text.stringText.toLower;
+					auto inputNameMatch = (_strInput.toLower == m.text.stringText.toLower);
 					if ( inputNameMatch ) {
 						noMedia = false;
 						m.tell;
-						if ( isAPicture( m.picture ) )
+						if ( m.picture.isPic )
 							_picture = m.picture;
 					}	
 				}
 				if ( noMedia && _strInput.length > 0 ) {
 					IMedia m;
-						m = _media[ uniform( 0, $ ) ];
+					m = _media[ uniform( 0, $ ) ];
 					_picture = m.picture;
 					m.tell;
 				}
@@ -90,23 +96,18 @@ private:
 		}
 	}
 	
-	// check for picture (is it null or pointing to picture data)
-	bool isAPicture( in Sprite picture ) {
-		return ( picture !is null );
-	}
-
 	void drawPicture() {
 		// Show picture
-		if ( doShowPicture && isAPicture( _picture ) ) {
+		if ( doShowPicture && _picture.isPic ) {
 			float
-				sw = _picture.image.width,
-				sh = _picture.image.height;
+				sw = _picture.mRect.w,
+				sh = _picture.mRect.h;
 			import std.string;
 			float dw, dh;
 			dw = dh = 0;
-			if ( sw > window.width || sh > window.height ) {
+			if ( sw > SCREEN_WIDTH || sh > SCREEN_HEIGHT ) {
 				float max = fmax( sw, sh );
-				float max2 = ( max == sw ? window.width : window.height );
+				float max2 = ( max == sw ? SCREEN_WIDTH : SCREEN_HEIGHT );
 
 				dw = sw / max * max2,
 				dh = sh / max * max2;
@@ -115,7 +116,9 @@ private:
 				dh = sh;
 			}
 
-			gGraph.draw(_picture.image,Vec((window.width-dw)/2,(window.height-dh)/2));
+			// gGraph.draw(_picture.image,Vec((window.width-dw)/2,(window.height-dh)/2));
+			_picture.pos = Point((SCREEN_WIDTH-dw)/2, (SCREEN_HEIGHT-dh)/2);
+			_picture.draw;
 		}
 	}
 
@@ -123,16 +126,23 @@ private:
 		// show ref words
 		if ( doShowRefWords ) {
 			if (g_upDateRefGfx) {
-				_refsImg.edit((Display graph) @trusted {
-					foreach( media; _media )
-						foreach( printFatness; EnumMembers!g_PrintFatness ) { // fat and slim type - fat prints slim x9
-							media.showRefWord( graph, printFatness );
-						}
-				});
+				// _refsImg.edit((Display graph) @trusted {
+				SDL_SetRenderTarget(gRenderer, _refsImg.mImg);
+				SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+				SDL_RenderClear(gRenderer);
+				drawPicture;
+				foreach( media; _media )
+					foreach( printFatness; EnumMembers!g_PrintFatness ) { // fat and slim type - fat prints slim x9
+						media.showRefWord( printFatness );
+					}
+				// });
 				g_upDateRefGfx = false;
 				//"update".gh;
+				SDL_SetRenderTarget(gRenderer, null);
 			} else {
-				gGraph.draw(_refsImg, Vec(0,0));
+				//gGraph.draw(_refsImg, Vec(0,0));
+
+				_refsImg.draw;
 			}
 		} // show ref words
 	}

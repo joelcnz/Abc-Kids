@@ -20,7 +20,8 @@ import algo = std.algorithm;
 import std.typetuple;
 import std.path;
 
-import jecfoxid;
+// import jecfoxid;
+import jecsdl;
 
 import base, world;
 
@@ -118,7 +119,22 @@ int main( string[] args ) {
 } // main
 
 int init(string[] args) {
-	assert(jf_setup(g_displayTitle), "jf setup failed");
+	//assert(jf_setup(g_displayTitle), "jf setup failed");
+
+	immutable programName = "Abc-Kids";
+	SCREEN_WIDTH = 640; SCREEN_HEIGHT = 480;
+	//SCREEN_WIDTH = 2560; SCREEN_HEIGHT = 1600;
+	// SCREEN_WIDTH = 1280; SCREEN_HEIGHT = 800;
+	if (jecsdlsetup("Poorly Programmed Producions - Presents: " ~ programName,
+		SCREEN_WIDTH, SCREEN_HEIGHT,
+		SDL_WINDOW_SHOWN
+		//SDL_WINDOW_OPENGL
+		//SDL_WINDOW_FULLSCREEN_DESKTOP
+		//SDL_WINDOW_FULLSCREEN
+		) != 0) {
+		writeln("Init failed");
+		return 1;
+	}
 
 	scope( exit )
 		close;
@@ -140,20 +156,16 @@ int init(string[] args) {
 }
 
 void close() {
-	destroy(gGraph);
-	destroy(loader);
-	destroy(g_font);
-
-	destroy(window);
-	sdlDestroy();
+	SDL_DestroyRenderer(gRenderer);
+	SDL_Quit();
 }
 
 /**
  * Setup font for text
  */
 void setUpGlobalFont(string fileName) {
-	g_font = new Font();
-	base.g_font.load(fileName, 36); // 18 seemed nice, (but small)
+	gFont = TTF_OpenFont(fileName.toStringz, 36);
+	//gFont.load(fileName, 36); // 18 seemed nice, (but small)
 }
 
 /**

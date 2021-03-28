@@ -13,7 +13,7 @@ import std.array; // for empty
 import std.path; // for pathSeparator( '\\' or '/' )
 import std.ascii;
 
-import jecfoxid;
+import jecsdl;
 
 import base, texthandling; //, keys;
 
@@ -25,7 +25,7 @@ alias std.ascii.lowercase lowercase;
 @("hello", 1, 2.3, '4')
 class Input {
 public:
-	Sound blowSnd;
+	JSound blowSnd;
 	string _lastInput;
 	int keysEnd = SDL_NUM_SCANCODES;
 	bool updateRefGraphs;
@@ -33,28 +33,27 @@ public:
 	this() {
 		_text = new KText(
 			/* xpos: */ 0,
-			/* ypos: */ window.height-("Yy".getHeightText(g_font))-7, // centered
-			/* fat colour: */ Color(0,0,255), //Colour.blue,
-			/* slim colour: */ Color(0,255,255) //Colour.cyan
+			/* ypos: */ SCREEN_HEIGHT - 50,
+			/* fat colour: */ SDL_Color(0,0,255), //Colour.blue,
+			/* slim colour: */ SDL_Color(0,255,255) //Colour.cyan
 		);
 		
 		// go through the letters of the alphabet
 		immutable a = 0, z = 26;
 		// Use this sound in the case of each letter sound fails to load
-		blowSnd = new Sound();
-		blowSnd.load(g_playBackFolder ~ dirSeparator ~ "blow.wav", "blowup" );
+		//blowSnd = new Sound();
+		blowSnd.loadSnd(g_playBackFolder ~ dirSeparator ~ "blow.wav");
 		foreach( letter; a .. z ) {
 			auto fileName = g_voicesFolder ~ dirSeparator ~ lowercase[ letter ] ~ ".wav";
-
 			auto otherFileName = fileName[ 0 .. $ - 4 ] ~ ".ogg";
 			
 			if ( ! exists( fileName ) && exists( otherFileName ) )
 				fileName = otherFileName;
 
 			if ( exists( fileName ) ) {
-				_lsnds[ letter ] = new Sound();
-				_lsnds[ letter ].load( fileName, fileName );
-				if ( _lsnds[ letter ] is null ) {
+				//_lsnds[ letter ] = new Sound();
+				_lsnds[ letter ].loadSnd( fileName );
+				if ( _lsnds[ letter ].mSnd is null ) {
 					writeln( fileName, " - not load! - Get hold of your vendor at once!" );
 					_lsnds[ letter ] = blowSnd; // default sound
 				}
@@ -63,7 +62,7 @@ public:
 				writeln( fileName, " - not exist! - Get hold of your vendor at once!" );
 		}
 		
-		foreach( number; 0 .. 9 + 1 ) {
+		foreach( number; 0 .. 9 + 1) {
 			auto fileName = g_voicesFolder ~ dirSeparator ~ number.to!string() ~ ".wav";
 
 			auto otherFileName = fileName[ 0 .. $ - 4 ] ~ ".ogg";
@@ -72,11 +71,11 @@ public:
 				fileName = otherFileName;
 
 			if ( exists( fileName ) ) {
-				_nsnds[ number ] = new Sound();
-				_nsnds[ number ].load( fileName, fileName );
-				if ( _nsnds[ number ] is null ) {
+				// _nsnds[ number ] = new JSound();
+				_nsnds[ number ].loadSnd( fileName );
+				if ( _nsnds[ number ].mSnd is null ) {
 					writeln( fileName, " - not load! - Get hold of your vendor at once!" );
-					_nsnds[ number ] = blowSnd; // default sound
+					//_nsnds[ number ] = blowSnd; // default sound
 				}
 			}
 			else
@@ -122,8 +121,8 @@ public:
 			_text.draw(fatness, true);
 	}
 private:
-	Sound[ g_numberOfLettersInTheAphabet ] _lsnds;
-	Sound[ 10 ] _nsnds; //#?
+	JSound[g_numberOfLettersInTheAphabet] _lsnds;
+	JSound[10] _nsnds; //#?
 	IText _text;
 	immutable
 		enum keysStart = 0;
@@ -150,7 +149,7 @@ private:
 		return g_emptyText;
 	}
 	
-	string doNumbers( int keyId, ref string text, ref bool doShowRefWords, ref bool doShowPicture  ) {
+	string doNumbers( int keyId, ref string text, ref bool doShowRefWords, ref bool doShowPicture ) {
 		struct NumKeys {
 			int scanc;
 			char n;
@@ -168,7 +167,7 @@ private:
 			{SDL_SCANCODE_9,'9'}];
 		foreach(sni, nk; numKeys)
 			if (g_keys[nk.scanc].keyTrigger) {
-				_nsnds[sni].play(false);
+				_nsnds[sni].play;
 				text ~= nk.n;
 			}
 		return g_emptyText;
@@ -177,7 +176,7 @@ private:
 	string doBackSpace( int keyId, ref string text, ref bool doShowRefWords, ref bool doShowPicture  ) {
 		bool wordHasLength = text.length > 0;
 		if ( wordHasLength && keyId == SDL_SCANCODE_BACKSPACE && g_keys[ SDL_SCANCODE_BACKSPACE ].keyTrigger ) {
-			blowSnd.play(false);
+			blowSnd.play;
 			text = text[ 0 .. $ - 1 ];
 		}
 		return g_emptyText;
@@ -188,9 +187,10 @@ private:
 		auto textIsSomeThing = text != g_emptyText;
 		if ( keyId == SDL_SCANCODE_RETURN && g_keys[ SDL_SCANCODE_RETURN ].keyTrigger ) {
 			//"return".gh;
+			g_upDateRefGfx = true;
 			if ( textIsSomeThing ) {
 				if (text == "r" || text == "R") {
-					text = "";
+					text = g_emptyText;
 					doShowRefWords = false;
 					doShowPicture = true;
 					return _lastInput;
@@ -199,7 +199,7 @@ private:
 					// show picture without the words
 					doShowRefWords = false;
 					doShowPicture = true;
-					g_upDateRefGfx = true;
+					// g_upDateRefGfx = true;
 				}
 				
 				auto text2 = _text.stringText.idup;

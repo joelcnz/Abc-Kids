@@ -1,3 +1,8 @@
+Coding notes:
+
+Problems:
+#OldPicPopsBackUp If you do a just sound one, it displays the last picture.
+
 .gitignore doesn't seem to be working
 
 **************************************************************************
@@ -44,6 +49,6 @@ LettersE by Emily Christensen
 
 Others worth mentioning:
 Mari.wav by Lahtrell
-Latrell by Lahtrell
+Lahtrell by Lahtrell
 Sean M
 Jade M
